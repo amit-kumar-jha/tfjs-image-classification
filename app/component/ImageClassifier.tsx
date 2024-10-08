@@ -3,6 +3,7 @@ import React, { useState, useRef } from "react";
 import * as mobilenet from "@tensorflow-models/mobilenet";
 import "@tensorflow/tfjs";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 const ImageClassifier = () => {
   const [image, setImage] = useState<string | null>(null);
@@ -10,11 +11,8 @@ const ImageClassifier = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const loadAndClassifyImage = async (imageElement: HTMLImageElement) => {
-    // Load the MobileNet model
     const model = await mobilenet.load();
-    // Classify the uploaded image
     const predictions = await model.classify(imageElement);
-    // Set the result
     setResult(predictions[0]?.className || "No result");
   };
 
@@ -38,43 +36,76 @@ const ImageClassifier = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6">
-      <h1 className="text-3xl font-bold mb-4">
-        Image Classifier with TensorFlow.js
-      </h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-gray-700 text-white px-4 py-8">
+      <motion.h1
+        className="text-4xl font-extrabold mb-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+      >
+        AI-Powered Image Classifier
+      </motion.h1>
 
-      <input
-        type="file"
-        ref={fileInputRef}
-        accept="image/*"
-        onChange={handleImageUpload}
-        className="mb-4 p-2 border border-gray-300 rounded"
-      />
-
-      {image && (
+      <motion.div
+        className="w-full max-w-md bg-gray-800 rounded-xl shadow-2xl p-6 space-y-4"
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8 }}
+      >
         <div className="flex flex-col items-center">
-          <Image
-            id="uploadedImage"
-            src={image}
-            alt="Uploaded"
-            width={300}
-            height={300}
-            className="mb-4 rounded shadow-lg"
-          />
-          <button
-            onClick={handleClassifyClick}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+          <label
+            htmlFor="file-upload"
+            className="cursor-pointer bg-gradient-to-r from-blue-500 to-purple-600 text-white py-2 px-4 rounded-md text-sm font-semibold shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:scale-105"
           >
-            Classify Image
-          </button>
+            Upload an Image
+          </label>
+          <input
+            id="file-upload"
+            type="file"
+            ref={fileInputRef}
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="hidden"
+          />
         </div>
-      )}
 
-      {result && (
-        <div className="mt-4 text-lg font-medium text-green-600">
-          Prediction: {result}
-        </div>
-      )}
+        {image && (
+          <motion.div
+            className="flex flex-col items-center mt-4"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Image
+              id="uploadedImage"
+              src={image}
+              alt="Uploaded Image"
+              width={300}
+              height={300}
+              className="rounded-lg border-2 border-gray-300 shadow-lg"
+            />
+            <motion.button
+              onClick={handleClassifyClick}
+              className="mt-4 bg-green-500 text-white py-2 px-6 rounded-lg text-sm font-semibold shadow-lg hover:bg-green-600 hover:shadow-xl transition duration-300 ease-in-out transform hover:scale-105"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Classify Image
+            </motion.button>
+          </motion.div>
+        )}
+
+        {result && (
+          <motion.div
+            className="mt-6 text-center text-lg font-semibold bg-gray-900 p-4 rounded-lg shadow-md text-green-400"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            Prediction: {result}
+          </motion.div>
+        )}
+      </motion.div>
     </div>
   );
 };
